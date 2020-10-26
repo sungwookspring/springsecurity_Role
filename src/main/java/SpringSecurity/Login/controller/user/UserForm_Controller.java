@@ -14,6 +14,6 @@ public class UserForm_Controller {
     public String join(Model model){
         model.addAttribute("joinForm", new Request_User_JoinForm_dto());
 
-        return "/user/join";
+        return "user/join";
     }
 }
