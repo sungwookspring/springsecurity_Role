@@ -2,7 +2,6 @@ package SpringSecurity.Login.user;
 
 import SpringSecurity.Login.controller.user.dto.Request_User_JoinForm_dto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
@@ -26,9 +24,7 @@ public class UserService {
             return -1L;
         }else{
             DBUser new_user = request.toEntity();
-            log.info("[*] 암호화전: " + new_user.getPassword());
             new_user.setPassword(passwordEncoder.encode(new_user.getPassword()));
-            log.info("[*] 회원가입 전 패스워드 암호화 확인: " + new_user.getPassword());
 
             Long saveId = userRepository.save(new_user).getId();
             return saveId;
