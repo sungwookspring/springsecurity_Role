@@ -3,6 +3,7 @@ package SpringSecurity.Login.controller.user;
 import SpringSecurity.Login.controller.user.dto.Request_User_JoinForm_dto;
 import SpringSecurity.Login.user.UserRepository;
 import SpringSecurity.Login.user.UserService;
+import SpringSecurity.Login.user.role.UserRole;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static SpringSecurity.Login.user.role.UserRole.ADMIN;
+import static SpringSecurity.Login.user.role.UserRole.GENERAL;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserAPI_ControllerTest {
@@ -26,16 +30,34 @@ public class UserAPI_ControllerTest {
 
     @Test
     public void 회원가입_Dto사용(){
+        //== 일반 계정 생성 ==/
         //given
-        Request_User_JoinForm_dto request = Request_User_JoinForm_dto.builder()
+        Request_User_JoinForm_dto general_user = Request_User_JoinForm_dto.builder()
                 .username("test_user")
                 .password(passwordEncoder.encode("password"))
                 .email("test@aaa.com")
+                .role(GENERAL)
                 .build();
 
         //when
         String url = "http://localhost:" + port + "/api/v1/user/join";
-        ResponseEntity<Long> responseEntity = restTemplate.postForEntity(url, request, Long.class);
+        ResponseEntity<Long> responseEntity = restTemplate.postForEntity(url, general_user, Long.class);
+
+        //then
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(responseEntity.getBody()).isGreaterThan(0L);
+
+        //== 관리자 계정 생성 ==/
+        //given
+        Request_User_JoinForm_dto admin = Request_User_JoinForm_dto.builder()
+                .username("admin")
+                .password(passwordEncoder.encode("password"))
+                .email("admin@aaa.com")
+                .role(ADMIN)
+                .build();
+
+        //when
+        responseEntity = restTemplate.postForEntity(url, admin, Long.class);
 
         //then
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -49,6 +71,7 @@ public class UserAPI_ControllerTest {
                 .username("test_user")
                 .password(passwordEncoder.encode("password"))
                 .email("test@aaa.com")
+                .role(GENERAL)
                 .build();
 
         //given
@@ -56,6 +79,7 @@ public class UserAPI_ControllerTest {
                 .username("test_user")
                 .password(passwordEncoder.encode("password"))
                 .email("test@aaa.com")
+                .role(GENERAL)
                 .build();
 
         //when
