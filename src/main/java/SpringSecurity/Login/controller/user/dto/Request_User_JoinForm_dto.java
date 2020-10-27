@@ -27,6 +27,7 @@ public class Request_User_JoinForm_dto {
                 .password(password)
                 .username(username)
                 .email(this.email)
+                .role(role)
                 .build();
     }
 }
