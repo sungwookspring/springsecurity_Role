@@ -1,5 +1,6 @@
 package SpringSecurity.Login.user;
 
+import SpringSecurity.Login.user.role.UserRole;
 import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,11 +23,14 @@ public class DBUser {
     @Setter
     private String password;
 
+    private UserRole role;
+
     @Builder
-    public DBUser(String email, String username, String password) {
+    public DBUser(String email, String username, String password, UserRole role) {
         this.email = email;
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
 }
