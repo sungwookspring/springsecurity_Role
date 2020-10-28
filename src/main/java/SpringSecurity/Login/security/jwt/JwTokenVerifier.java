@@ -4,15 +4,12 @@ import com.google.common.base.Strings;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +21,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JwTokenVerifier extends OncePerRequestFilter {
+    @Autowired
+    private JwtProvider jwtProvider;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -36,13 +36,9 @@ public class JwTokenVerifier extends OncePerRequestFilter {
         }
 
         try{
-            SecretKey key = Keys.hmacShaKeyFor("randomStringrandomStringPdsdfsdfsdfsdfsdfsdfsdfsdfdsfsdfsdfsdfsdfsdfsdflease".getBytes());
+            String token = authorizationHeader.replace("Bearer ", "");
 
-            String token =authorizationHeader.replace("Bearer ", "");
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
+            Jws<Claims> claimsJws = jwtProvider.parserClaim(token);
 
             Claims body = claimsJws.getBody();
             String email = body.getSubject();
@@ -52,12 +48,14 @@ public class JwTokenVerifier extends OncePerRequestFilter {
                     .map(m -> new SimpleGrantedAuthority(m.get("authority")))
                     .collect(Collectors.toSet());
 
+            // 인가정보 생성
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     email,
                     null,
                     simpleGrantedAuthorities
             );
 
+            // 인가정보 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }catch (JwtException e){
             throw new IllegalStateException("token can't be trust");
