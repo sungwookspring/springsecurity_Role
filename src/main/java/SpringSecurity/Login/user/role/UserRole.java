@@ -28,7 +28,6 @@ public enum UserRole {
     }
 
     public Set<SimpleGrantedAuthority> getGrantedAuthorities(){
-        log.info("getGrantedAuthorities 요청");
         Set<SimpleGrantedAuthority> authorities = getPermissions().stream()
                 .map(permissions -> new SimpleGrantedAuthority(permissions.getPermission()))
                 .collect(Collectors.toSet());
@@ -43,7 +42,6 @@ public enum UserRole {
 
     @JsonCreator
     public static UserRole fromString(String role){
-        log.info("fromString 호출" + role);
         return stringToEnum.get(role);
     }
 

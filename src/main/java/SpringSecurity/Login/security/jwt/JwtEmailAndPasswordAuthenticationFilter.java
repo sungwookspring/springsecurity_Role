@@ -28,7 +28,6 @@ public class JwtEmailAndPasswordAuthenticationFilter  extends UsernamePasswordAu
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            log.info("[*] 인증요청");
             // 파싱
             AuthenticationRequest authenticationRequest = new ObjectMapper().readValue(request.getInputStream(), AuthenticationRequest.class);
 
@@ -40,7 +39,6 @@ public class JwtEmailAndPasswordAuthenticationFilter  extends UsernamePasswordAu
 
             // 인증
             Authentication authenticate = authenticationManager.authenticate(authentication);
-            log.info("[*] 인증완료");
             return authenticate;
         } catch (IOException e) {
             throw new RuntimeException(e);
