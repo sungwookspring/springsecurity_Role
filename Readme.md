@@ -52,6 +52,47 @@ public enum UserRole {
  * 에러: dependency 에러
  * 해결: jjwt-jackson depdency 추가
  
+ ## OncePerRequestFilter Null 오류
+ * 에러: OncePerRequestFilter에서 Autowired를 한 클래스를 불러오지 못해 null초기화
+ * 해결: OncePerRequestFilter 클래스는 Bean으로 설정
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    ...
+
+    @Bean
+    public JwTokenVerifier jwTokenVerifier(){
+        return new JwTokenVerifier();
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+        ...
+                .csrf().disable()
+                .addFilterBefore(jwTokenVerifier(), UsernamePasswordAuthenticationFilter.class)
+        ...
+    }
+}
+```
+
+## 필터추가 후 http 요청 불가
+* 상황: security 필터 추가 후 요청이 안되는 상황
+* 해결: 제일 마지막에 다음 필터로 넘어가는 filterChain.doFilter(request, response) 호출
+```java
+public class JwTokenVerifier extends OncePerRequestFilter {
+    ...
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        ...
+
+        filterChain.doFilter(request, response);
+    }
+```
  
 # 참고자료
 * [1] jwtk library: https://github.com/jwtk/jjwt#install-jdk-gradle
