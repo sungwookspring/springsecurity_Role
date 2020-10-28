@@ -1,5 +1,6 @@
 package SpringSecurity.Login.security;
 
+import SpringSecurity.Login.security.jwt.JwTokenVerifier;
 import SpringSecurity.Login.security.jwt.JwtEmailAndPasswordAuthenticationFilter;
 import SpringSecurity.Login.user.role.UserRole;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilter(new JwtEmailAndPasswordAuthenticationFilter(authenticationManager()))
+                .addFilterAfter(new JwTokenVerifier(), JwtEmailAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                     .antMatchers("/api/v1/book/write").hasRole(ADMIN.name())
                 .anyRequest().permitAll();
