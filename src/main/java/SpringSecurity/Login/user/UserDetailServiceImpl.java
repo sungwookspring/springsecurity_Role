@@ -21,7 +21,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.info("request login email: " + email);
+        log.info("[*] request login email: " + email);
         DBUser find_user = userService.findByEmail(email);
 
         return UserDetailsImpl.builder()
